@@ -1,0 +1,60 @@
+trigger:
+  - features/*
+
+pr:
+  - features/*
+
+variables:
+  serviceName: feat-$(Build.SourceBranchName)
+  environmentName: feature-branch-poc-$(Build.SourceBranchName)
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: "CheckingStage"
+    displayName: "Checking Stage"
+    jobs:
+    - job: CheckJob
+      displayName: 'Check Job'
+        continueOnError: false
+        steps:
+        - script: |
+           echo serviceName=$(variables.serviceName)
+           echo environmentName=$(variables.environmentName)
+           echo artifactName=$(variables.serviceName)-drop
+        displayName: Display variables
+
+  - stage: "BuildStage"
+    displayName: "Build Stage"
+    jobs:
+    - template: templates/jobs/build.yml
+      parameters:
+        artifactName: $(variables.serviceName)-drop
+
+  - stage: "DeploymentStage"
+    displayName: "Deployment Stage"
+    dependsOn: BuildStage
+    condition: succeeded()
+    jobs:
+    - template: templates/jobs/deploy.yml
+      parameters:
+        environmentName: $(variables.environmentName)
+        artifactName: $(variables.serviceName)-drop
+
+  - stage: "TerraformBuildStage"
+    displayName: "Terraform Build Stage"
+    jobs:
+    - template: templates/jobs/terraform-build.yml
+      parameters:
+        serviceName: $(variables.serviceName)
+  
+  - stage: "TerraformDeployStage"
+    displayName: "Terraform Deploy Stage"
+    dependsOn: TerraformBuildStage
+    condition: succeeded()
+    jobs:
+    - template: templates/jobs/terraform-deploy.yml
+      parameters:
+        environmentName: $(variables.environmentName)
+        serviceName: $(variables.serviceName)

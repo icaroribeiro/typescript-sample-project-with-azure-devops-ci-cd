@@ -1,0 +1,73 @@
+parameters:
+  - name: environmentName"
+    type: string
+  - name: "terraformEnvVariables"
+
+jobs:
+  - job: TerraformBuildJob
+    displayName: "Terraform Build Job"
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+    displayName: "Install Terraform 1.3.7"
+    inputs:
+      terraformVersion: 1.3.7
+
+    - task: TerraformTaskV4@4
+    displayName: "Initialize Terraform"
+    inputs:
+    provider: "aws"
+    command: "init"
+    backendServiceAWS: "FeaturePOCDevAWS"
+    backendAWSBucketName: "feature-poc-state-bucket-dev"
+    backendAWSKey: "state/$(Build.SourceBRanchName)-terraform-state"
+
+
+
+     provider: 'azurerm'
+    command: 'init'
+    backendServiceArm: 'your-backend-service-connection'
+    backendAzureRmResourceGroupName: 'your-rg-name'
+    backendAzureRmStorageAccountName: 'your-stg-name'
+    backendAzureRmContainerName: 'your-container-name'
+    backendAzureRmKey: 'state.tfstate'
+
+- task: TerraformTaskV4@4
+  name: terraformPlan
+  displayName: Create Terraform Plan
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    commandOptions: '-out main.tfplan'
+    environmentServiceNameAzureRM: 'your-environment-service-connection'
+
+# Only runs if the 'terraformPlan' task has detected changes the in state. 
+- task: TerraformTaskV4@4
+  displayName: Apply Terraform Plan
+  condition: eq(variables['terraformPlan.changesPresent'], 'true')
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    commandOptions: 'main.tfplan'
+    environmentServiceNameAzureRM: 'your-environment-service-connection'
+
+    - script: |
+       echo "Running Terraform init..."
+       terraform init
+    displayName: 'Terraform init'
+      env:
+          TF_STATE_BLOB_ACCOUNT_NAME:
+
+
+
+        echo "Running Terraform plan..."
+        terraform plan -var-file ${{ parameters.tfvarsFile }}
+      displayName: 'Terraform init'
+      - script: |
+        echo "Running Terraform init..."
+        terraform init
+        echo "Running Terraform plan..."
+        terraform plan -var-file ${{ parameters.tfvarsFile }}
+      displayName: 'Terraform init'
+      

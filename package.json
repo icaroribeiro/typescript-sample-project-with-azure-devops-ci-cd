@@ -1,0 +1,21 @@
+{
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.2",
+    "ts-jest": "^29.1.4",
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "lint": "eslint \"src/**/*.{json,js,jsx,ts,tsx}\"",
+    "prettier": "prettier \"src/**/*.{json,js,jsx,ts,tsx}\" --write",
+    "prettier2": "prettier \".azure-pipelines\\**\\*\" --write",
+    "test": "jest --clearCache --coverage",
+    "package": "mkdir -p dist/layers/deps-layer && cp package*.json dist/layers/deps-layer && npm --prefix dist/layers/deps-layer ci"
+  }
+}

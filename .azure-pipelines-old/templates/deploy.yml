@@ -1,0 +1,22 @@
+parameters:
+  - name: "environmentName"
+    type: string
+
+  - name: "artifactName"
+    type: string
+
+jobs:
+  - deployment: DeploymentJob
+    displayName: "Deployment Job"
+    pool:
+      vmImage: "ubuntu-latest"
+    environment: ${{ parameters.environmentName) }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: "current"
+                artifactName: ${{ parameters.artifactName }}
+                targetPath: "$(Pipeline.Workspace)"
