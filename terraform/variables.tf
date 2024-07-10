@@ -2,7 +2,7 @@ variable "region" {
   type = string
 }
 
-variable "service" {
+variable "branch" {
   type = string
 }
 

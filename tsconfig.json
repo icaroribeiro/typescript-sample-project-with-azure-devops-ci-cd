@@ -1,22 +1,27 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 22",
-  "_version": "22.0.0",
+  "_version": "20.0.0",
   "compilerOptions": {
-    "lib": ["es2023"],
-    "module": "node16",
-    "target": "es2022",
-    "strict": true,
+    "baseUrl": "./packages",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "lib": [
+      "es2023"
+    ],
+    "module": "node16",
     "moduleResolution": "node16",
-    "rootDir": "src",
-    "outDir": "dist",
-    "noImplicitAny": true,
     "paths": {
-      "/opt/nodejs/*": ["./src/layers/*"]
+      "@acme/*": [
+        "./*/src"
+      ]
     },
+    "rootDir": ".",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2022"
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.spec.ts"]
+  "display": "Node 20"
 }
